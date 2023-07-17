@@ -2,7 +2,7 @@
   "name": "controller",
   "version": "1.0.0",
   "scripts": {
-    "dev": "nodemon index.js",
+    "dev": "nodemon --exec ts-node --transpile-only index.ts",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],

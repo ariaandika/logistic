@@ -6,7 +6,8 @@
     "moduleResolution": "node",
     "lib": ["esnext"],
     "sourceMap": true,
-    "strict": true
+    "strict": true,
+    "skipLibCheck": true
   },
   "include": [
     "./**/*.ts"
