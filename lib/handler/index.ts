@@ -8,8 +8,8 @@ import { handles } from "./handler";
 export const createExpress = (pool: import('mysql2/promise').Pool) => {
   const app = x.Router()
   
-  for (const { route, handle, schema } of handles) {
-    app.post(route, async (req,res)=> {
+  for (const { handle, schema } of handles) {
+    app.post(schema.url, async (req,res)=> {
       const body = await schema.Input.safeParseAsync(req.body)
       
       if (!body.success) return res.json(Err('Invalid data'))
