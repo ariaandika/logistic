@@ -1,0 +1,7 @@
+{
+  "name": "banter-logistic",
+  "workspaces": [
+    "lib",
+    "controller"
+  ]
+}
