@@ -63,7 +63,6 @@ export const DriverSchema = z.object({
 export const UserSchema = z.object({
   id: z.number(),
   username: z.string(),
-  password: z.string(),
+  passwd: z.string(),
   type: z.enum(["counter","kurir","driver"])
 })
-
