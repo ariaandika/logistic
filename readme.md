@@ -8,12 +8,14 @@ files:
 
 - schema  
   all entity metadata
-  - schema
-  - table
-  - primary key
 - handler  
   used for controller
   - schema
   - route
   - handle
-  
+- util  
+  utility function and constants
+
+## Server
+
+manage server using [signal](./docs/server.md)
