@@ -48,6 +48,9 @@ async function main() {
   process.on('SIGTERM',e=>{
     console.log(':P')
   })
+  server.once('close',()=>{
+    process.removeAllListeners()
+  })
 }
 
 main()
