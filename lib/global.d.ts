@@ -2,14 +2,20 @@
 
 export {}
 
-
 declare global {
   type Result<T> =
     { success: true; data: T } |
     { success: false; error: Error };
+   
+  interface Array<T> {
+    filter(predicate: BooleanConstructor, thisArg?: any): NonFalsy<T>[];
+  }
+
+  interface ReadonlyArray<T> {
+    filter(predicate: BooleanConstructor, thisArg?: any): NonFalsy<T>[];
+  }
 }
 
-// connection.query('INSERT INTO posts SET ?', {title: 'test'}, function (error, results, fields) {
-//   if (error) throw error;
-//   console.log(results.insertId);
-// });
+type NonFalsy<T> = T extends false | 0 | "" | null | undefined | 0n
+  ? never
+  : T;
