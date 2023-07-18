@@ -20,7 +20,8 @@ const builder = <T extends p>({ url }: T) => {
   }
 }
 
-type ex = { [P in keyof typeof handles]: ReturnType<typeof builder<typeof handles[P]>> }
+type Handles = typeof handles
+type ex = { [P in keyof Handles]: ReturnType<typeof builder<Handles[P]>> }
 
 const Api: ex = {} as any
 const keys = Object.keys(handles)
@@ -30,4 +31,4 @@ for (let i = 0;i < keys.length;i++) {
   Api[keys[i]] = builder(handles[keys[i]])
 }
 
-export default Api
+export { Api }
