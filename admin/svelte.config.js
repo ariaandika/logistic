@@ -8,7 +8,11 @@ const config = {
 	preprocess: vitePreprocess(),
 
 	kit: {
-		adapter: adapter()
+		adapter: adapter(),
+		alias: {
+			'cp': 'src/cp/index.ts',
+			'cp/*': 'src/cp/*'
+		}
 	}
 };
 
