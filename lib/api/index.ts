@@ -1,6 +1,7 @@
 import * as handles from "../handler/schema"
 import type { handles as handletype } from "../handler/handler"
 import { Ok, ServerErr } from "../util"
+import { SessionApi } from "./index.t"
 
 type p = typeof handletype[0]['schema']
 
@@ -13,7 +14,7 @@ const builder = <T extends p>({ url }: T) => {
         headers: { 'content-type': 'application/json' }
       })
       
-      return Ok(await result.json())
+      return await result.json()
     } catch (error) {
       return ServerErr(error)
     }
