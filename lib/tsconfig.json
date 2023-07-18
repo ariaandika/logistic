@@ -6,7 +6,9 @@
     "moduleResolution": "node",
     "lib": ["DOM"],
     "sourceMap": true,
-    "strict": true
+    "strict": true,
+    "forceConsistentCasingInFileNames": true,
+    "skipLibCheck": true
   },
   "include": [
     "./**/*.ts"
