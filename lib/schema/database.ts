@@ -66,3 +66,10 @@ export const UserSchema = z.object({
   passwd: z.string(),
   type: z.enum(["counter","kurir","driver"])
 })
+
+export const SessionSchema = z.object({
+  sessionId: z.string(),
+  value: z.string(),
+  exp: z.date(),
+  user_id: z.number()
+})

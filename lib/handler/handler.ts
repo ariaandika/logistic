@@ -2,7 +2,7 @@ import bcrypt from "bcrypt";
 import { Err, Ok } from "lib/util";
 import { UserSchema } from "../schema/database"
 import { z } from 'zod'
-import { Login, Register } from "./schema";
+import { Login, Register, Session } from "./schema";
 
 export const handles: {
   schema: Parameters<typeof builder>[0],
@@ -41,4 +41,15 @@ builder(Login, async (exec, { username, passwd }) => {
   const result = await bcrypt.compare(passwd, user.passwd)
   
   return result ? Ok({ type: user.type }) : Err(err)
+})
+
+builder(Session, async (exec, { cookie }) => {
+  
+  const [sessionValue] = await exec<Zod.infer<typeof Session['Output']>>(`\
+  SELECT s.value,s.exp,u.username,u.type FROM session s
+  WHERE sessionId = ? LEFT
+  LEFT JOIN User u ON u.id = s.user_id`
+  , [cookie])
+  
+  return Ok(sessionValue ?? null)
 })
