@@ -2,10 +2,11 @@
 <script lang=ts>
   type T = $$Generic
 
-  export let result: Result<T[]> | Result<T> | null
+  export let result: Result<T> | null
 
   interface $$Slots {
     default: { data: T }
+    none: { message: string }
     err: { err: Error }
     empty: {}
   }
@@ -15,21 +16,13 @@
 
 {#if result && result.success}
 
-  {#if Array.isArray(result.data)}
+  {#if result.data === null}
   
-    <!-- UNWRAP ARRAY -->
-    {#each result.data as elem}
-      <slot data={elem}/>
-    {:else}
-      <slot name="empty">
-        Tidak Ditemukan
-      </slot>
-    {/each}
-    
+  <slot name="none" message={result.message}/>
+  
   {:else}
   
-    <!-- UNWRAP OTHER -->
-    <slot data={result.data}/>
+  <slot data={result.data}/>
   
   {/if}
   

@@ -1,21 +1,24 @@
 import { type Actions, redirect } from "@sveltejs/kit";
+import { Unwrap } from "lib/util";
 import { Api } from "lib/api";
 
 export const actions: Actions = {
-  login: async ({ request }) => {
+  login: async ({ request, cookies }) => {
     
     const form = await request.formData()
-    const data = Object.fromEntries(form.entries()) as any
+    const input = Object.fromEntries(form.entries()) as any
     
-    const result = await Api.Login(data, false)
+    const result = await Api.Login(input, false)
     
     
-    if (!result.success) {
-      return { success: false, error: { message: ('username atau password salah') }, username: data.username ?? '' } as Result<any> & { username: string }
+    if (!result.success || result.data == null) {
+      return { result: result, username: input.username ?? '' }
     }
     
-    const userType = result.data.type
+    const session = Unwrap(result.data)
     
-    throw redirect(304,'/' + userType)
+    cookies.set('sessionId',session.sessionId)
+    
+    throw redirect(303,'/' + session.type)
   }
 };
