@@ -11,7 +11,10 @@ export const handles: {
   ) => Promise<Result<Zod.infer<T['Output']>>>,
 }[] = []
 
-const builder = <T extends typeof handles[number]['schema']>(schema: T, handle: typeof handles[number]['handle']) => {
+const builder = <T extends { Input: Zod.ZodType, Output: Zod.ZodType, url: string }>(schema: T, handle: (
+  exec: <U = { insertId: number }>(sql: string, val?: any) => Promise<U extends { insertId: number } ? { insertId: number } : U[]>,
+  i: Zod.infer<T['Input']>,
+) => Promise<Result<Zod.infer<T['Output']>>>) => {
   handles.push({ schema, handle })
 }
 

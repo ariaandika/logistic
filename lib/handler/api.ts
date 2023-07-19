@@ -2,7 +2,6 @@ import * as handles from "./schema"
 import type { handles as handletype } from "./handler"
 import { Ok, ServerErr } from "../util"
 
-
 type p = typeof handletype[0]['schema']
 
 const builder = <T extends p>({ url }: T) => {
