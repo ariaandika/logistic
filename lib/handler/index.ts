@@ -12,7 +12,7 @@ export const createExpress = (pool: import('mysql2/promise').Pool) => {
     app.post(schema.url, async (req,res)=> {
       const body = await schema.Input.safeParseAsync(req.body)
       
-      if (!body.success) return res.json(Err('Invalid data'))
+      if (!body.success) return res.json(Err('coba lagi'))
       
       const conn = await pool.getConnection()
       
