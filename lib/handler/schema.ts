@@ -5,7 +5,7 @@ import { z } from "zod";
 
 export const Login = {
   Input: UserSchema.pick({ username: true, passwd: true }),
-  Output: UserSchema.pick({ type: true }),
+  Output: UserSchema.pick({ type: true }).extend(SessionSchema.pick({ sessionId: true }).shape),
   url: "/user/login"
 }
 
@@ -19,4 +19,10 @@ export const Session = {
   Input: z.object({ cookie: z.string() }),
   Output: SessionSchema.pick({ value: true, exp: true }).extend(UserSchema.pick({ username: true, type: true }).shape),
   url: "/user/session"
+}
+
+export const Logout = {
+  Input: z.object({ sessionId: z.string() }),
+  Output: z.object({}),
+  url: '/user/logout'
 }
