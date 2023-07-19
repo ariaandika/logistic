@@ -1,30 +1,24 @@
 import bcrypt from "bcrypt";
 import { None, Ok } from "lib/util";
 import { UserSchema } from "../schema/database"
-import { z } from 'zod'
-import { Login, Logout, Register, Session } from "./schema";
+import { BarangList, Login, Logout, Register, Session } from "./schema";
 
 export const handles: {
-  schema: Parameters<typeof builder>[0],
-  handle: Parameters<typeof builder>[1],
+  schema: { Input: Zod.ZodType, Output: Zod.ZodType, url: string },
+  handle: <T extends typeof handles[number]['schema']>(
+    exec: <U = { insertId: number }>(sql: string, val?: any) => Promise<U extends { insertId: number } ? { insertId: number } : U[]>,
+    i: Zod.infer<T['Input']>,
+  ) => Promise<Result<Zod.infer<T['Output']>>>,
 }[] = []
 
-const builder = <T extends { Input: Zod.AnyZodObject, Output: Zod.AnyZodObject, url: string }>(schema: T, handle: (
-  exec: <U = { insertId: number }>(sql: string, val?: any) => Promise<U extends { insertId: number } ? { insertId: number } : U[]>,
-  i: z.infer<T['Input']>,
-) => Promise<Result<Zod.infer<T['Output']>>>) => {
+const builder = <T extends typeof handles[number]['schema']>(schema: T, handle: typeof handles[number]['handle']) => {
   handles.push({ schema, handle })
 }
 
 const ui = new Uint8Array(20)
 const d = new TextDecoder()
-
-const createHash = () => {
-  const b = ui.map(_=>Math.floor(Math.random() * 95) + 33);
-  return d.decode(b)
-}
-
 const saltRounds = 10
+const createHash = () => d.decode(ui.map(_=>Math.floor(Math.random() * 95) + 33))
 
 
 builder(Register, async (exec, { username, passwd, type }) => {

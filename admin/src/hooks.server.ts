@@ -1,5 +1,5 @@
 import { redirect, type Handle } from "@sveltejs/kit";
-import { Api } from "lib/api";
+import { Api } from "lib/handler/api";
 
 export const handle = (async ({ event, resolve }) => {
   console.log("SERVER HOOK")

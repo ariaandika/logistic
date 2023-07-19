@@ -1,6 +1,6 @@
 import { type Actions, redirect } from "@sveltejs/kit";
 import { Unwrap } from "lib/util";
-import { Api } from "lib/api";
+import { Api } from "lib/handler/api";
 
 export const actions: Actions = {
   login: async ({ request, cookies }) => {

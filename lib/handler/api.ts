@@ -1,7 +1,7 @@
-import * as handles from "../handler/schema"
-import type { handles as handletype } from "../handler/handler"
+import * as handles from "./schema"
+import type { handles as handletype } from "./handler"
 import { Ok, ServerErr } from "../util"
-import { SessionApi } from "./index.t"
+
 
 type p = typeof handletype[0]['schema']
 
