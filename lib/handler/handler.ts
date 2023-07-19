@@ -9,7 +9,7 @@ export const handles: {
   handle: Parameters<typeof builder>[1],
 }[] = []
 
-const builder = <T extends { Input: Zod.AnyZodObject, Output: Zod.AnyZodObject, url: string }>(schema: T, handle: (
+const builder = <T extends { Input: Zod.ZodType, Output: Zod.ZodType, url: string }>(schema: T, handle: (
   exec: <U = { insertId: number }>(sql: string, val?: any) => Promise<U extends { insertId: number } ? { insertId: number } : U[]>,
   i: z.infer<T['Input']>,
 ) => Promise<Result<Zod.infer<T['Output']>>>) => {
