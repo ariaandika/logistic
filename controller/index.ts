@@ -6,15 +6,17 @@ import { pool } from "./internal/db";
 import { cors, logger } from "./internal/middleware";
 
 const app = express()
-
+const PORT = 4040
 const router = createExpress(pool)
 
 app.use(json())
-app.use(router)
-app.use(cors)
-app.use(logger);
 
-const PORT = parseInt( process.env.CONTROLLERPORT ?? "4040")
+if (process.env.ENVIRONMENT == 'development') {
+  app.use(cors)
+}
+
+app.use(logger);
+app.use(router);
 
 process.on('uncaughtException', (err) => {
   console.error('[UNCAUGHT_ERR]',err)
@@ -28,11 +30,7 @@ process.on('SIGINT',e=>{
   console.log('closing server...')
   server.close()
 })
-process.on('SIGTERM',e=>{
-  console.log(':P')
-})
 server.once('close',()=>{
+  pool.end()
   process.removeAllListeners()
 })
-
-console.log('man')
