@@ -6,6 +6,7 @@
 
   interface $$Slots {
     default: { data: T }
+    none: { message: string }
     err: { err: Error }
     empty: {}
   }
@@ -17,6 +18,12 @@
 
   <!-- DONT UNWRAP ARRAY -->
   <slot data={result.data}/>
+  
+{:else if result && result.success === null}
+  
+    <slot name="none" message={result.message}>
+      {result.message}
+    </slot>
   
 {:else}
   <slot name="err" err={result.error}>

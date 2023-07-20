@@ -11,7 +11,7 @@ export const Ok = <T>(data: T) => {
 }
 
 export const None = <T = any>(msg: string) => {
-  return { success: true, data: null, message: msg } satisfies Result<T>
+  return { success: null, message: msg } satisfies Result<T>
 }
 
 export const Err = <T = any>(msg?: string, name?: string) => {
