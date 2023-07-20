@@ -29,3 +29,13 @@ export const ServerErr = <T = any>(error: any) => {
   console.log('[/SERVER ERR]')
   return { success: false, error: { message: 'Kesalahan Server, mohon coba beberapa saat lagi', name: SERVER_ERR } } satisfies Result<T>
 }
+
+export function safeParseInt(val: any, fallback: number): number;
+export function safeParseInt(val: any | undefined): Result<number>;
+export function safeParseInt(val: any | undefined, fallback?: number): Result<number> | number {  
+  if (val == null) return fallback ?? Err<number>()
+  const i = parseInt(val)
+  if (fallback)
+    return isNaN(i) ? fallback : i
+  return isNaN(i) ? Err<number>() : Ok(i)
+}

@@ -1,6 +1,6 @@
 import { UserSchema, SessionSchema, CounterSchema, BarangSchema, Barang_DetailSchema } from "../schema/database"
 import { z } from "zod";
-import { BarangDisplay } from "../schema/view";
+import { BarangDisplay, TracingDisplay } from "../schema/view";
 
 // Schema splitted so it can be used in client
 
@@ -32,6 +32,8 @@ export const CounterRegister = {
 
 //#endregion
 
+//#region Counter barang
+
 export const BarangCounterList = {
   Input: z.object({ limit: z.number().optional(), subjek: z.number() }),
   Output: BarangDisplay.array(),
@@ -48,4 +50,14 @@ export const BarangInsert = {
     no_resi: z.number()
   }),
   url: '/barang/insert'
+}
+
+export const TracingList = {
+  Input: z.object({ barang_id: z.number() }),
+  Output: z.object({
+    barang: BarangSchema,
+    last_tracing: TracingDisplay,
+    tracings: TracingDisplay.array()
+  }),
+  url: '/barang/trace'
 }

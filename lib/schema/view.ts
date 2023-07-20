@@ -1,3 +1,4 @@
+import { z } from "zod";
 import { BarangSchema, Barang_DetailSchema, TracingSchema } from "./database";
 
 
@@ -13,3 +14,10 @@ export const BarangDisplay = BarangSchema.pick({
   kota: true, 
   total_koli: true, 
 })
+
+export const TracingDisplay = TracingSchema.pick({ 
+  tipe: true, 
+  subjek: true 
+}).extend(z.object({
+  nama: z.string(),
+}).shape)

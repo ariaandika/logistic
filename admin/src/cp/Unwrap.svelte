@@ -10,7 +10,7 @@
     err: { err: Error }
     empty: {}
   }
-
+  console.log('UNWRAP', result)
 </script>
 
 
@@ -18,7 +18,9 @@
 
   {#if result.data === null}
   
-  <slot name="none" message={result.message}/>
+  <slot name="none" message={result.message}>
+    {result.message}
+  </slot>
   
   {:else}
   

@@ -1,7 +1,7 @@
 import bcrypt from "bcrypt";
 import { None, Ok } from "lib/util";
 import { Barang_DetailSchema, BarangSchema, CounterSchema, TracingSchema, UserSchema } from "../schema/database"
-import { BarangCounterList, Login, Logout, CounterRegister, Session, BarangInsert } from "./schema";
+import { BarangCounterList, Login, Logout, CounterRegister, Session, BarangInsert, TracingList } from "./schema";
 import { q, schema, select } from "../util/sql";
 import { BarangDisplay, TracingInsert } from "../schema/view";
 import { table } from "../schema/tables";
@@ -76,6 +76,8 @@ builder(CounterRegister, async (exec, { username, passwd, type, nama }) => {
 
 //#endregion
 
+//#region Counter Barang
+
 builder(BarangCounterList, async (exec, { limit, subjek }) => {
   
   // get barang tracing 
@@ -113,3 +115,38 @@ builder(BarangInsert, async (exec, { alamat, barang_details, counter_id }) => {
   await Promise.all(promises)
   return Ok({ no_resi: insertId })
 })
+
+builder(TracingList,async (exec, { barang_id }) => {
+  
+  // query all tracing by id
+  
+  const [barang] = await exec<object>(
+    table.barang.select() + ' limit 1'
+  )
+  
+  const result = await exec<Zod.infer<typeof TracingSchema>>(`\
+    SELECT t.tipe,t.subjek,t.aktif,
+      COALESCE(c.nama, k.nama, d.nama) AS nama
+    FROM tracing t
+    LEFT JOIN pos c ON t.tipe = 'counter' AND t.subjek = c.id
+    LEFT JOIN kurir k ON t.tipe = 'kurir' AND t.subjek = k.id
+    LEFT JOIN driver d ON t.tipe = 'driver' AND t.subjek = d.id
+    WHERE t.barang_id = ?`,
+    [barang_id]
+  )
+  
+  if (result.length == 0) 
+    return None(`Barang dengan no resi ${barang_id} tidak ditemukan`)
+  
+  const [last_tracing] = result.splice(result.findIndex(e=>e.aktif),1);
+  
+  const out = TracingList.Output.parse({
+    barang,
+    last_tracing,
+    tracings: result
+  })
+  
+  return Ok(out)
+})
+
+//#endregion Counter Barang
