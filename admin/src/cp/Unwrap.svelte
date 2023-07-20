@@ -28,7 +28,8 @@
   
 {:else if result}
   <slot name="err" err={result.error}>
-    Error "{result.error.name}", {result.error.message}<br>
-    Cause, {result.error.cause}
+    Error "{JSON.stringify(result.error)}"
+    <!-- , {result.error.message}<br> -->
+    <!-- Cause, {result.error.cause} -->
   </slot>
 {/if}

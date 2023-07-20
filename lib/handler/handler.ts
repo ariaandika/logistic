@@ -1,14 +1,14 @@
 import bcrypt from "bcrypt";
 import { None, Ok } from "lib/util";
-import { UserSchema } from "../schema/database"
-import { BarangList, Login, Logout, Register, Session } from "./schema";
+import { Barang_DetailSchema, BarangSchema, CounterSchema, TracingSchema, UserSchema } from "../schema/database"
+import { BarangCounterList, Login, Logout, CounterRegister, Session, BarangInsert } from "./schema";
+import { q, schema, select } from "../util/sql";
+import { BarangDisplay, TracingInsert } from "../schema/view";
+import { table } from "../schema/tables";
 
 export const handles: {
-  schema: { Input: Zod.ZodType, Output: Zod.ZodType, url: string },
-  handle: <T extends typeof handles[number]['schema']>(
-    exec: <U = { insertId: number }>(sql: string, val?: any) => Promise<U extends { insertId: number } ? { insertId: number } : U[]>,
-    i: Zod.infer<T['Input']>,
-  ) => Promise<Result<Zod.infer<T['Output']>>>,
+  schema: Parameters<typeof builder>['0'],
+  handle: Parameters<typeof builder>['1'],
 }[] = []
 
 const builder = <T extends { Input: Zod.ZodType, Output: Zod.ZodType, url: string }>(schema: T, handle: (
@@ -23,41 +23,12 @@ const d = new TextDecoder()
 const saltRounds = 10
 const createHash = () => d.decode(ui.map(_=>Math.floor(Math.random() * 95) + 33))
 
-
-builder(Register, async (exec, { username, passwd, type }) => {
-  const [user] = await exec<Zod.infer<typeof UserSchema>>("SELECT `username` FROM user WHERE `username` = ? LIMIT 1", [username])
-  
-  if (user) return None('Username tidak tersedia')
-  
-  const hash = await bcrypt.hash(passwd, saltRounds)
-  const somes = await exec<{ insertId: number }>("insert into user (`username`, `passwd`, `type`) values (?, ?, ?)", [username,hash,type])
-  console.log(somes)
-  return Ok({ id: somes.insertId })
-})
-
-builder(Login, async (exec, { username, passwd }) => {
-  
-  const [user] = await exec<Zod.infer<typeof UserSchema>>("SELECT * FROM user WHERE username = ? LIMIT 1", [username])
-  
-  const err = 'username atau password salah'
-  
-  if (!user) return None(err)
-  
-  const result = await bcrypt.compare(passwd, user.passwd)
-  
-  if (!result) return None(err)
-  
-  const hash = createHash()
-  
-  await exec('insert into session (`sessionId`,`value`,`user_id`) values (?, ?, ?)',[hash,'key=value',user.id])
-  console.log('LOGIN UUID', hash)
-  return Ok({ type: user.type, sessionId: hash })
-})
+//#region Session management
 
 builder(Session, async (exec, { cookie }) => {
   
   const [sessionValue] = await exec<Zod.infer<typeof Session['Output']>>(`\
-  SELECT s.value,s.exp,u.username,u.type FROM session s
+  SELECT s.value,s.exp,u.username,u.type,u.subjek FROM session s
   LEFT JOIN user u ON u.id = s.user_id
   WHERE sessionId = ?
   `, [cookie])
@@ -68,4 +39,77 @@ builder(Session, async (exec, { cookie }) => {
 builder(Logout, async (exec, { sessionId }) => {
   await exec('delete from session where sessionId = ? limit 1',[sessionId])
   return Ok({})
+})
+
+builder(Login, async (exec, { username, passwd }) => {
+  
+  const err = 'username atau password salah'
+  
+  const [user] = await exec<Zod.infer<typeof UserSchema>>("SELECT * FROM user WHERE username = ? LIMIT 1", [username])
+  if (!user) return None(err)
+  
+  const result = await bcrypt.compare(passwd, user.passwd)
+  if (!result) return None(err)
+  
+  const hash = createHash()
+  
+  await exec('insert into session (`sessionId`,`value`,`user_id`) values (?, ?, ?)',[hash,'key=value',user.id])
+  
+  return Ok({ type: user.type, sessionId: hash })
+})
+
+builder(CounterRegister, async (exec, { username, passwd, type, nama }) => {
+  const [user] = await exec<Zod.infer<typeof UserSchema>>("SELECT `username` FROM user WHERE `username` = ? LIMIT 1", [username])
+  
+  if (user) return None('Username tidak tersedia')
+  
+  const id = await exec('insert into counter (`nama`) values (?)',[nama])
+  
+  const hash = await bcrypt.hash(passwd, saltRounds)
+  const somes = await exec<{ insertId: number }>(
+    "insert into user (`username`, `passwd`, `type`, `subjek`) values (?,?,?,?)", 
+    [username,hash,type,id.insertId]
+  )
+  
+  return Ok({ id: somes.insertId })
+})
+
+//#endregion
+
+builder(BarangCounterList, async (exec, { limit, subjek }) => {
+  
+  // get barang tracing 
+  
+  const result = await exec<Zod.infer<typeof BarangSchema>>(`\
+  select ${schema(BarangDisplay,'b')} FROM tracing t
+  LEFT JOIN barang b ON b.no_resi = t.barang_id
+  WHERE t.aktif = true AND t.tipe = 'counter' AND t.subjek = ?
+  LIMIT ?
+  `, [subjek,limit ?? 50])
+
+  return Ok(result)
+})
+
+builder(BarangInsert, async (exec, { alamat, barang_details, counter_id }) => {
+  
+  const vals = Object.values(alamat)
+  
+  const { insertId } = await exec(table.barang.insert(), vals)
+  const promises = []
+  
+  const ivals = barang_details
+    .map( detail => Object.values(Barang_DetailSchema.parse({ ...detail, barang_id: insertId })) )
+    .flat()
+  
+  promises.push(exec( table.barang_detail.insert(barang_details.length) ,ivals))
+  
+  // BUG MYSQL DRIVER
+  // promises.push(exec( table.tracing.insert(), [tracing_data] ))
+  promises.push(exec( 
+    `insert into tracing (barang_id, subjek, tipe, aktif) 
+    values (${insertId}, ${counter_id}, 'counter', 1)
+  `))
+  
+  await Promise.all(promises)
+  return Ok({ no_resi: insertId })
 })

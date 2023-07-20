@@ -27,7 +27,7 @@ export const handle = (async ({ event, resolve }) => {
       throw redirect(303, '/')
     }
     
-    event.locals.auth = { type: session.type, username: session.username }
+    event.locals.auth = { type: session.type, username: session.username, subjek: session.subjek }
   }
   console.log('PAGE',event.url.pathname)
   

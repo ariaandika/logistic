@@ -1,11 +1,12 @@
 import x from "express";
 import { Err, ServerErr } from '../util';
+import type { Pool } from "mysql2/promise"
 
 // express handler entry point
 
 import { handles } from "./handler";
 
-export const createExpress = (pool: import('mysql2/promise').Pool) => {
+export const createExpress = (pool: Pool) => {
   const app = x.Router()
   
   for (const { handle, schema } of handles) {

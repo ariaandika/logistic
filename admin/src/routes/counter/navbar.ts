@@ -6,4 +6,5 @@ export const navMenu = {
   "Gateway Out": "/gateout",
   "Gateway In": "/gatein",
   "Kurir": "/kurir",
+  "Profil": "/profile",
 }
