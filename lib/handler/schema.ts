@@ -1,6 +1,6 @@
-import { UserSchema, SessionSchema, CounterSchema, BarangSchema, Barang_DetailSchema } from "../schema/database"
+import { UserSchema, SessionSchema, CounterSchema, BarangSchema, Barang_DetailSchema, DriverSchema } from "../schema/database"
 import { z } from "zod";
-import { BarangDisplay, TracingDisplay } from "../schema/view";
+import { BarangDisplay, ManifestDisplay, ManifestDisplayExt, TracingDisplay } from "../schema/view";
 
 // Schema splitted so it can be used in client
 
@@ -61,3 +61,54 @@ export const TracingList = {
   }),
   url: '/barang/trace'
 }
+
+export const GatewayOut = {
+  Input: z.object({ 
+    no_resi: z.number().array(),
+    subjek: z.number(),
+    tipe: z.enum(['driver','kurir'])
+  }),
+
+  Output: ManifestDisplay,
+  url: '/gateway/out'
+}
+
+export const DriverGet = {
+  Input: z.object({ driver_id: z.number(), tipe: z.enum(['driver','kurir']).default('driver') }),
+  Output: DriverSchema,
+  url: '/driver'
+}
+
+export const GatewayIn = {
+  Input: z.object({
+    no_resi: z.number().array(), 
+    counter_id: z.number(), 
+    manifest_id: z.number(),
+  }),
+  Output: z.object({ success: z.boolean() }),
+  url: '/gateway/in'
+}
+
+export const ManifestQuery = {
+  Input: z.object({
+    manifest_id: z.number()
+  }),
+  Output: ManifestDisplay,
+  url: '/manifest'
+}
+
+export const ManifestById = {
+  Input: z.object({ user_id: z.number() }),
+  Output: ManifestDisplayExt,
+  url: '/manifest/kurir'
+}
+
+export const FinishBarang = {
+  Input: z.object({
+    no_resi: z.number().array(),
+    subjek: z.number()
+  }),
+  Output: z.object({ success: z.boolean() }),
+  url: '/barang/finish'
+}
+

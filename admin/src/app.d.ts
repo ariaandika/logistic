@@ -8,7 +8,9 @@ declare global {
 		interface Locals {
 			auth: Pick<Zod.infer<typeof import("lib/schema/database").UserSchema>,'username'|'type'|'subjek'>
 		}
-		// interface PageData {}
+		interface PageData {
+			auth: Locals['auth']
+		}
 		// interface Platform {}
 	}
 }

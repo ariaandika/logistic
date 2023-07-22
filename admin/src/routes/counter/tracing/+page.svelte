@@ -10,14 +10,14 @@
 
 <div class="grid grid-cols-1 gap-4">
   <form class="join w-full" method="post" use:enhance>
-    <input class="input input-bordered focus:outline-none input-lg join-item z-10 w-full" name="id"
+    <input class="input input-bordered focus:outline-none input-lg join-item z-10 w-full" name="id" required
       type="number" placeholder="No Resi" bind:value={search}/>
     <button class="btn join-item btn-lg {search != null && "btn-primary"}">Cari</button>
   </form>
   
   <Form {form} let:form>
     <Unwrap result={form} let:data>
-      
+      {@const _ = console.log(data)}
       <Container>
         <div class="flex flex-col w-full lg:flex-row">
           
@@ -27,7 +27,11 @@
               {#each data.tracings as tr}
               <li class="step step-primary">di {tr.tipe} oleh {tr.nama}</li>
               {/each}
+              {#if data.last_tracing.tipe == 'sampai'}
+              <li class="step step-primary text-primary-content font-bold">sudah sampai</li>
+              {:else}
               <li class="step step-primary text-primary-content font-bold">di {data.last_tracing.tipe} oleh {data.last_tracing.nama}</li>
+              {/if}
             </ul>
           </div> 
             

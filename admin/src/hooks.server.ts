@@ -1,6 +1,12 @@
 import { redirect, type Handle } from "@sveltejs/kit";
 import { Api } from "lib/handler/api";
 
+const protectedUrl = {
+  counter: '/counter',
+  driver: '/driver',
+  kurir: '/kurir',
+}
+
 export const handle = (async ({ event, resolve }) => {
   console.log("SERVER HOOK")
   
@@ -13,23 +19,25 @@ export const handle = (async ({ event, resolve }) => {
   
   const session = valid?.data
   
-  if (event.url.pathname == '/') {
+  // dont check authentication when changing authentication
+  if (event.url.pathname.startsWith('/auth')){
     
-    if (session) {
-      console.log('SESSION SOME, GOTO COUNTER',session)
-      throw redirect(303, '/' + session.type)
-    }
+  } else if (event.url.pathname == '/') {
+    
+    if (session) throw redirect(303, '/' + session.type)
     
   } else {
     
-    if (!session) {
-      console.log('SESSION NONE, GOTO /',session)
-      throw redirect(303, '/')
-    }
+    if (!session) throw redirect(303, '/')
+    
+    const url = Object.entries(protectedUrl).find(([type,url])=>{
+      return session.type == type && event.url.pathname.startsWith(url)
+    })
+    
+    if (!url) throw redirect(303, '/' + session.type)
     
     event.locals.auth = { type: session.type, username: session.username, subjek: session.subjek }
   }
-  console.log('PAGE',event.url.pathname)
   
   return await resolve(event);
 }) satisfies Handle;

@@ -4,6 +4,8 @@
   import { Post, Unwrap, Container } from "cp";
   import { store } from "./data";
   import type { BarangInsert } from "lib/handler/schema";
+    import { page } from "$app/stores";
+    import { invalidateAll } from "$app/navigation";
   
   // const prom = getProm
   
@@ -15,6 +17,7 @@
   <Post let:fetch schemaIn={inn} schemaRes={res}>
     
     <div slot="resolved"  let:result>
+      {@const _ = invalidateAll()}
       <Container>
         <Unwrap {result} let:data>
           Barang id {data.no_resi}
@@ -68,6 +71,7 @@
     <button class="btn btn-primary" on:click={e=>{
       const data = $store
       data.barang_details = data.barang_details.slice(0,data.alamat.total_koli)
+      data.counter_id = $page.data.auth.subjek
       console.log(data)
       fetch(data)
     }}>Submit</button>

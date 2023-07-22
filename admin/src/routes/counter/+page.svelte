@@ -1,16 +1,17 @@
 
 
 <script lang=ts>
-  import { enhance } from "$app/forms";
-  import { Unwrap } from "cp";
+  import { Unwrap, Container } from "cp";
+    import type { LayoutData } from "./$types";
   
-  export let data
+  export let data: LayoutData
 </script>
 
-<div>
+<Container>
+  
   <h1 class="text-2xl font-bold">Halo {data.auth.username}</h1>
-  
-  
+
+
   <Unwrap result={data.queries} let:data>
     <div class="overflow-x-auto">
       <table class="table table-sm">
@@ -35,9 +36,9 @@
       </table>
     </div>
   </Unwrap>
-  
-  <form action="?/logout" method="post" use:enhance>
+
+  <form action="?/logout" method="post">
     <button class="btn btn-primary" name="logout">Logout</button>
   </form>
   
-</div>
+</Container>

@@ -48,7 +48,7 @@ export const store = writable<Zod.infer<typeof BarangInsert["Input"]>>({
       nama: randName()
     },
   ],
-  counter_id: 1
+  counter_id: 0
 })
 
 

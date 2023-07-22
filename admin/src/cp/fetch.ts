@@ -14,10 +14,11 @@ export function getProm<T>(link: string) {
       
       if (query) {
         const ent = Object.entries(query)
-        target += '?'
+        const q: string[] = []
         ent.forEach(([k,v])=>{
-          target += k + '=' + String(v)
+          q.push(k + '=' + String(v))
         })
+        target += '?' + q.join('&')
       }
       
       fetch(target, { signal: ctr.signal })

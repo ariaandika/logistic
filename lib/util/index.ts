@@ -18,10 +18,6 @@ export const Err = <T = any>(msg?: string, name?: string) => {
   return { success: false, error: { message: msg ?? 'Terjadi kesalahan, coba lagi', name: name ?? BAD_REQUEST } } satisfies Result<T>
 }
 
-export const Unwrap = <T>(data: T | null): T => {
-  return data as any
-}
-
 export const ServerErr = <T = any>(error: any) => {
   dateLog()
   console.log('[SERVER ERR]')
