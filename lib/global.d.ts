@@ -5,6 +5,7 @@ export {}
 declare global {
   type Result<T> =
     { success: true; data: T } |
+    { success: null; message: string } |
     { success: false; error: Error };
    
   interface Array<T> {

@@ -7,7 +7,10 @@
     "lib": ["esnext"],
     "sourceMap": true,
     "strict": true,
-    "skipLibCheck": true
+    "skipLibCheck": true,
+    // "./import.ts" is not equal to "iMpOrt.tS"
+    // some os allow case-insensitive
+    "forceConsistentCasingInFileNames": true
   },
   "include": [
     "./**/*.ts"

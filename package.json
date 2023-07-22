@@ -2,6 +2,7 @@
   "name": "banter-logistic",
   "workspaces": [
     "lib",
-    "controller"
+    "controller",
+    "admin"
   ]
 }
