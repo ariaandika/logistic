@@ -1,4 +1,4 @@
-// / <reference path="./schema/schema.d.ts"/>
+/// <reference path="./schema.d.ts"/>
 
 export {}
 

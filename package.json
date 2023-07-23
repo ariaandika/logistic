@@ -3,6 +3,8 @@
   "workspaces": [
     "lib",
     "controller",
-    "admin"
+    "admin",
+    "devtool",
+    "lib-dyn"
   ]
 }
