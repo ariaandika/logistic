@@ -5,6 +5,7 @@
     "controller",
     "admin",
     "devtool",
-    "lib-dyn"
+    "lib-dyn",
+    "api-server"
   ]
 }
